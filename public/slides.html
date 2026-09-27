@@ -391,6 +391,78 @@
       font-size: 12px;
       color: #6b7280;
     }
+
+    /* Print & PDF Export (Page by Page) */
+    @media print {
+      @page {
+        size: 16in 9in;
+        margin: 0;
+      }
+
+      *, *:before, *:after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+      }
+
+      html, body {
+        background: var(--bg) !important;
+        color: var(--text) !important;
+        height: auto !important;
+        width: 100% !important;
+        overflow: visible !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: block !important;
+      }
+
+      .theme-bar, .nav-bar, .hint {
+        display: none !important;
+      }
+
+      .deck-container {
+        position: static !important;
+        width: 100% !important;
+        max-width: none !important;
+        height: auto !important;
+        max-height: none !important;
+        perspective: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      .slide {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        max-width: none !important;
+        max-height: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        transform: none !important;
+        page-break-before: auto !important;
+        page-break-after: always !important;
+        page-break-inside: avoid !important;
+        break-after: page !important;
+        break-inside: avoid !important;
+        border-radius: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: var(--card-bg) !important;
+        padding: 60px 80px !important;
+        box-sizing: border-box !important;
+      }
+
+      .slide:last-child {
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -402,6 +474,7 @@
     <button class="theme-btn" id="btn-emerald" onclick="setTheme('emerald')">🌿 Emerald</button>
     <button class="theme-btn" id="btn-midnight" onclick="setTheme('midnight')">🌌 Midnight</button>
     <button class="theme-btn" id="btn-light" onclick="setTheme('light')">☀️ Cream</button>
+    <button class="theme-btn" onclick="window.print()" title="Export all slides as PDF" style="margin-left: 6px; border: 1px solid var(--border); font-weight: 600;">📄 Save PDF</button>
   </div>
 
   <div class="deck-container">
@@ -648,8 +721,9 @@
     <button class="nav-btn" id="prevBtn" onclick="prevSlide()">← Previous</button>
     <span class="counter" id="slideCounter">1 / 8</span>
     <button class="nav-btn primary" id="nextBtn" onclick="nextSlide()">Next →</button>
+    <button class="nav-btn" onclick="window.print()" title="Export all slides as PDF">📄 Export PDF</button>
   </div>
-  <p class="hint" style="margin-top: 8px;">Use Arrow Keys (← / →) or Spacebar to navigate · Press <b>T</b> to switch color theme</p>
+  <p class="hint" style="margin-top: 8px;">Use Arrow Keys (← / →) or Spacebar to navigate · Press <b>T</b> for color theme · Press <b>P</b> for PDF</p>
 
   <script>
     let current = 1;
@@ -704,6 +778,8 @@
         prevSlide();
       } else if (e.key === 't' || e.key === 'T') {
         cycleTheme();
+      } else if (e.key === 'p' || e.key === 'P') {
+        window.print();
       }
     });
 
