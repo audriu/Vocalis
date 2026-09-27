@@ -6,7 +6,8 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "playwright test tests/speech-signals.spec.ts"
   },
   "dependencies": {
     "@playwright/test": "^1.63.0",

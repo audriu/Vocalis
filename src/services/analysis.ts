@@ -1,163 +1,80 @@
 import { Analysis, AnalysisInput, Metric } from "@/types";
-import { FILLER_WORDS } from "@/data/fillers";
-import { pickTechniques, techniqueWhy } from "@/data/techniques";
+import { pickTechniques } from "@/data/techniques";
+import {
+  buildMistakes,
+  buildStrengths,
+  coachCopy,
+  collectSignals,
+  scoreMetrics,
+  weaknessDetail,
+} from "@/services/speech-signals";
 export interface AnalysisProvider {
   analyze(input: AnalysisInput): Promise<Analysis>;
 }
-const clamp = (n: number) => Math.max(35, Math.min(96, Math.round(n)));
 export function analyzeLocally(input: AnalysisInput): Analysis {
   const { transcript, duration, category, topic } = input;
-  const words = transcript.trim().split(/\s+/).filter(Boolean);
-  const lower = transcript.toLowerCase();
-  const sentences = transcript
-    .match(/[^.!?]+[.!?]*/g)
-    ?.filter((x) => x.trim()) || [transcript];
-  const fillers = FILLER_WORDS
-    .map((word) => ({
-      word,
-      count: (lower.match(new RegExp("\\b" + word + "\\b", "g")) || []).length,
-    }))
-    .filter((x) => x.count > 0);
-  const fillerCount = fillers.reduce((n, f) => n + f.count, 0);
-  const unique =
-    new Set(words.map((w) => w.toLowerCase().replace(/[^a-z]/g, ""))).size /
-    Math.max(1, words.length);
-  const structureMarkers = (
-    lower.match(
-      /\b(first|second|because|for example|for instance|finally|in conclusion|so|ultimately|however)\b/g,
-    ) || []
-  ).length;
-  const hasExample =
-    /for example|for instance|when i|last year|last week|one time/i.test(
-      transcript,
-    );
-  const avgLength = words.length / sentences.length;
-  const topicWords = topic
-    .toLowerCase()
-    .split(/\W+/)
-    .filter((w) => w.length > 4);
-  const overlap = topicWords.filter((w) => lower.includes(w)).length;
-  const rate = (words.length / Math.max(duration, 1)) * 60;
-  const metrics: Record<Metric, number> = {
-    Clarity: clamp(88 - Math.max(0, avgLength - 18) * 1.4),
-    Structure: clamp(58 + structureMarkers * 6 + (hasExample ? 8 : 0)),
-    Fluency: clamp(
-      87 - fillerCount * 3 - (rate < 70 ? 8 : rate > 190 ? 12 : 0),
-    ),
-    Vocabulary: clamp(52 + unique * 38),
-    Relevance: clamp(66 + overlap * 6),
-    Spontaneity: clamp(60 + structureMarkers * 3),
-    Confidence: clamp(
-      78 -
-        (lower.match(/maybe|i guess|i don't know|perhaps/g) || []).length * 5,
-    ),
-    Conciseness: clamp(91 - Math.max(0, avgLength - 17) * 1.8 - fillerCount),
-  };
+  const s = collectSignals(transcript, topic, duration);
+  const metrics = scoreMetrics(s);
   const ranked = Object.entries(metrics).sort((a, b) => a[1] - b[1]);
-  const first = sentences[0]?.trim() || "";
-  const strengths = [
-    {
-      title: hasExample ? "You made it concrete" : "You committed to an answer",
-      detail: hasExample
-        ? "Your response includes a specific example, giving listeners something tangible to connect with."
-        : `Your opening gives us a starting point: “${first.slice(0, 145)}${first.length > 145 ? "…" : ""}”`,
-    },
-  ];
-  if (structureMarkers > 1)
-    strengths.push({
-      title: "Signposts guide the listener",
-      detail: `You used ${structureMarkers} connecting phrases to link your ideas. Keep those transitions intentional.`,
-    });
-  if (unique > 0.65)
-    strengths.push({
-      title: "Varied word choices",
-      detail:
-        "You use a range of words rather than leaning on the same vocabulary throughout.",
-    });
-  const mistakes = [];
-  if (fillerCount)
-    mistakes.push({
-      title: "Filler words",
-      detail: `Found ${fillerCount} possible fillers: ${fillers.map((f) => `“${f.word}” (${f.count})`).join(", ")}. Some, such as “like,” may be meaningful in context.`,
-    });
-  if (!hasExample)
-    mistakes.push({
-      title: "Ideas need evidence",
-      detail:
-        "There is no explicit example marker in your response. Give one concrete situation that supports your main point.",
-    });
-  if (structureMarkers < 2)
-    mistakes.push({
-      title: "Loose structure",
-      detail:
-        "Your answer has few clear signposts. Use “because,” “for example,” and a concluding sentence to make your logic visible.",
-    });
-  if (avgLength > 23)
-    mistakes.push({
-      title: "Long sentences",
-      detail: `Your sentences average ${Math.round(avgLength)} words. Split your longest thought into two shorter sentences.`,
-    });
-  if (unique < 0.58)
-    mistakes.push({
-      title: "Repeated vocabulary",
-      detail:
-        "Several words recur throughout your answer. Check whether you are developing your idea or restating it.",
-    });
+  const strengths = buildStrengths(s);
+  const mistakes = buildMistakes(s, topic);
   const weakMetrics = ranked.slice(0, 3).map(([name]) => name as Metric);
-  // Predetermined bank: tip is specified by weakest metrics; seed varies techniques across sessions.
   const selected = pickTechniques(
     weakMetrics,
-    `${topic}|${category}|${duration}|${words.length}`,
+    `${topic}|${category}|${Math.round(metrics[weakMetrics[0]])}|${s.wordCount}|${s.topicHits.join(",")}`,
   );
   const weak_areas = weakMetrics.map((name) => ({
     name,
-    detail: techniqueWhy(name),
+    detail: weaknessDetail(name, s),
   }));
+  const overall = Math.round(
+    Object.values(metrics).reduce((a, b) => a + b, 0) / 8,
+  );
   let mode_metrics: Record<string, number> | undefined;
   if (category === "debate")
     mode_metrics = {
       "Argument quality": metrics.Structure,
-      Evidence: hasExample ? 84 : 55,
+      Evidence: s.hasExample && !s.looksGibberish ? Math.max(metrics.Relevance, 70) : Math.min(metrics.Relevance, 48),
       Persuasion: metrics.Clarity,
       Logic: metrics.Structure,
-      Rebuttal: /however|although|some argue|on the other hand/i.test(
-        transcript,
-      )
-        ? 83
-        : 52,
+      Rebuttal: /however|although|some argue|on the other hand/i.test(transcript)
+        ? 78
+        : Math.min(52, metrics.Structure),
     };
   if (category === "storytelling")
     mode_metrics = {
       Hook: metrics.Clarity,
       "Narrative structure": metrics.Structure,
-      Specificity: hasExample ? 85 : 58,
+      Specificity: s.hasExample && !s.looksGibberish ? 82 : Math.min(58, metrics.Relevance),
       Emotion: /felt|afraid|happy|worried|excited|sad/i.test(transcript)
-        ? 83
-        : 60,
-      Ending: /finally|learned|ultimately|in the end/i.test(transcript)
-        ? 85
-        : 60,
+        ? 80
+        : 55,
+      Ending: s.hasConclusion ? 84 : 52,
     };
   if (category === "interview")
     mode_metrics = {
       Professionalism: metrics.Conciseness,
       Relevance: metrics.Relevance,
       Structure: metrics.Structure,
-      Evidence: hasExample ? 86 : 57,
+      Evidence: s.hasExample && !s.looksGibberish ? 82 : Math.min(50, metrics.Clarity),
     };
   return {
-    overall_score: Math.round(
-      Object.values(metrics).reduce((a, b) => a + b, 0) / 8,
-    ),
+    overall_score: overall,
     metrics,
     strengths,
     mistakes,
-    filler_words: fillers,
+    filler_words: s.fillers,
     weak_areas,
     improvement_techniques: selected,
-    coach_feedback: `Your next opportunity is ${ranked[0][0].toLowerCase()}. ${selected[0].action} Keep your original point, but use this technique on your next attempt.`,
+    coach_feedback: coachCopy(
+      overall,
+      weakMetrics[0],
+      selected[0].action,
+      s,
+      topic,
+    ),
     recommended_next_prompt: topic,
-    words: words.length,
+    words: s.wordCount,
     provider: input.demo ? "demo" : "local",
     mode_metrics,
   };
@@ -271,9 +188,9 @@ export class LlmGatewayAnalysisProvider implements AnalysisProvider {
           messages: [
             {
               role: "system",
-              content: `You are Vocalis, a warm, direct public speaking coach. You review a transcript of someone speaking about a prompt and coach them. Be specific: quote or refer to what they actually said. Never invent things they did not say. Reply with only one JSON object and nothing else, in exactly this shape:
+              content: `You are Vocalis, a direct public speaking coach. Review the transcript against the prompt. Quote what they actually said. Never invent examples, structure, or a point they did not make. If they spoke off-topic, in fragments, or not in clear English, do not praise them for committing to an answer or for varied vocabulary. Reply with only one JSON object:
 {"strengths":[{"title":"","detail":""}],"mistakes":[{"title":"","detail":""}],"weak_areas":[{"name":"","detail":""}],"improvement_techniques":[{"name":"","weakness":"","why":"","action":"","practice":""}],"coach_feedback":"","recommended_next_prompt":""}
-Rules: 2 to 3 strengths; 0 to 3 mistakes; 2 to 3 weak_areas; exactly 3 improvement_techniques. Every weak_areas.name and every improvement_techniques.weakness must be one of: ${METRIC_NAMES.join(", ")}. Each technique's weakness must match one of the weak_areas names. Keep each detail to one or two sentences. coach_feedback is 2 to 3 encouraging sentences. recommended_next_prompt is one new speaking prompt that practices their weakest skill.`,
+Rules: 0 to 3 strengths (0 is correct when the take does not answer the prompt); 1 to 3 mistakes; 2 to 3 weak_areas; exactly 3 improvement_techniques. Every weak_areas.name and every improvement_techniques.weakness must be one of: ${METRIC_NAMES.join(", ")}. Each technique's weakness must match one of the weak_areas names. Keep each detail to one or two sentences and quote the transcript. coach_feedback is 2 to 3 honest sentences. recommended_next_prompt is one new speaking prompt that practices their weakest skill.`,
             },
             {
               role: "user",
@@ -282,6 +199,7 @@ Category: ${input.category}
 Speaking time: ${input.duration} seconds, ${local.words} words
 Filler words found: ${local.filler_words.map((f) => `${f.word} x${f.count}`).join(", ") || "none"}
 Lowest rule-based scores: ${weakest}
+Local flags: overall ${local.overall_score}; strengths ${local.strengths.map((x) => x.title).join(" | ") || "none"}; mistakes ${local.mistakes.map((x) => x.title).join(" | ") || "none"}
 Transcript:
 """${input.transcript.slice(0, 12000)}"""`,
             },
@@ -317,7 +235,7 @@ Transcript:
         return isMetric(t.weakness) && t.name && t.why && t.action && t.practice ? t : null;
       }, 3);
       const coach_feedback = text(reply.coach_feedback, 800);
-      if (!strengths.length || !weak_areas.length || !improvement_techniques.length || !coach_feedback)
+      if (!weak_areas.length || !improvement_techniques.length || !coach_feedback)
         return local;
       // Every technique needs a matching weak area so the results page can explain it.
       for (const t of improvement_techniques)

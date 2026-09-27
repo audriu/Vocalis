@@ -7,6 +7,14 @@ export function formatCountdown(ms:number){const total=Math.max(0,Math.ceil(ms/1
 export function useUnlock(){
  const {data}=useVocalis();const until=Date.parse(data.rewards?.unlockedUntil||'');const [now,setNow]=useState(()=>Date.now());
  const remaining=Number.isFinite(until)?until-now:0;const active=remaining>0;
- useEffect(()=>{setNow(Date.now());if(!Number.isFinite(until)||until<=Date.now())return;const interval=setInterval(()=>{const t=Date.now();setNow(t);if(t>=until)clearInterval(interval);},1000);return()=>clearInterval(interval);},[until]);
+ useEffect(() => {
+  if (!Number.isFinite(until) || until <= Date.now()) return;
+  const interval = setInterval(() => {
+    const t = Date.now();
+    setNow(t);
+    if (t >= until) clearInterval(interval);
+  }, 1000);
+  return () => clearInterval(interval);
+ }, [until]);
  return {active,remaining,label:formatCountdown(remaining),minutes:data.rewards?.unlockedMinutes||UNLOCK_MINUTES};
 }

@@ -96,44 +96,50 @@ export default function PracticeSession({ mode }: { mode: string }) {
   // ready by the time the user taps Analyze. Reused only if the inputs haven't changed since.
   const prefetch = useRef<{ key: string; result: Promise<Analysis> } | null>(null);
   useEffect(() => {
-    mounted.current = true;
+    const activeRun = run;
+    const activeRecorder = recorder;
+    const activeStt = stt;
+    const activeMounted = mounted;
+    activeMounted.current = true;
     if (params.get("demo") === "true") {
-      setTopic(SAMPLE_TOPIC);
-      setCategoryId("everyday-life");
-      setTranscript(demoTranscript);
-      setElapsed(60);
-      elapsedRef.current = 60;
-      setIsDemo(true);
-      setState("review");
+      queueMicrotask(() => {
+        if (!activeMounted.current) return;
+        setTopic(SAMPLE_TOPIC);
+        setCategoryId("everyday-life");
+        setTranscript(demoTranscript);
+        setElapsed(60);
+        elapsedRef.current = 60;
+        setIsDemo(true);
+        setState("review");
+      });
     } else if (!params.get("prompt")) {
       let cancelled = false;
       requestTopic(mode)
         .then((result) => {
-          if (!cancelled && mounted.current) {
+          if (!cancelled && activeMounted.current) {
             setTopic(result.prompt);
             setSide(result.side);
           }
         })
         .catch(() => {
-          if (!cancelled && mounted.current)
+          if (!cancelled && activeMounted.current)
             setNotice(
               "Using a saved prompt. You can still practice while the topic service reconnects.",
             );
         });
       return () => {
         cancelled = true;
-        mounted.current = false;
-        run.current++;
-        recorder.current?.dispose();
-        stt.current?.stop();
+        activeMounted.current = false;
+        activeRun.current++;
+        activeRecorder.current?.dispose();
+        activeStt.current?.stop();
       };
     }
-    ;
     return () => {
-      mounted.current = false;
-      run.current++;
-      recorder.current?.dispose();
-      stt.current?.stop();
+      activeMounted.current = false;
+      activeRun.current++;
+      activeRecorder.current?.dispose();
+      activeStt.current?.stop();
     };
     // The session is initialized once; the route supplies a new keyed component for a new mode.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -159,8 +165,10 @@ export default function PracticeSession({ mode }: { mode: string }) {
   useEffect(() => {
     // Keep a long selection in step with the unlock: fall back when it expires, follow it when upgraded.
     if (state !== "ready" || limit <= LENGTHS.at(-1)!) return;
-    if (!unlock.active) setLimit(LENGTHS.at(-1)!);
-    else if (limit !== unlockLength) setLimit(unlockLength);
+    queueMicrotask(() => {
+      if (!unlock.active) setLimit(LENGTHS.at(-1)!);
+      else if (limit !== unlockLength) setLimit(unlockLength);
+    });
   }, [unlock.active, unlockLength, state, limit]);
   useEffect(() => {
     if (state !== "processing") return;
@@ -243,6 +251,22 @@ export default function PracticeSession({ mode }: { mode: string }) {
       setState("ready");
     }
   }
+  function analysisInput(text: string): AnalysisInput {
+    return {
+      transcript: text,
+      topic: side ? `${side}: ${topic}` : topic,
+      category: categoryId,
+      duration: Math.max(1, elapsedRef.current),
+      demo: isDemo,
+    };
+  }
+  function prefetchAnalysis(text: string) {
+    const input = analysisInput(text);
+    if (input.demo || text.split(/\s+/).length < 5) return;
+    const result = requestAnalysis(input);
+    result.catch(() => {});
+    prefetch.current = { key: JSON.stringify(input), result };
+  }
   async function finish() {
     if (stopped.current) return;
     stopped.current = true;
@@ -297,9 +321,11 @@ export default function PracticeSession({ mode }: { mode: string }) {
       );
     }
   }
-  finishRef.current = () => {
-    void finish();
-  };
+  useEffect(() => {
+    finishRef.current = () => {
+      void finish();
+    };
+  });
   function cancelCountdown() {
     run.current++;
     recorder.current?.dispose();
@@ -331,22 +357,6 @@ export default function PracticeSession({ mode }: { mode: string }) {
       `Paste what you said or transcribe your own recording. Feedback is based on this text; ${limit} seconds is used as the estimated speaking duration.`,
     );
     setState("review");
-  }
-  function analysisInput(text: string): AnalysisInput {
-    return {
-      transcript: text,
-      topic: side ? `${side}: ${topic}` : topic,
-      category: categoryId,
-      duration: Math.max(1, elapsedRef.current),
-      demo: isDemo,
-    };
-  }
-  function prefetchAnalysis(text: string) {
-    const input = analysisInput(text);
-    if (input.demo || text.split(/\s+/).length < 5) return;
-    const result = requestAnalysis(input);
-    result.catch(() => {});
-    prefetch.current = { key: JSON.stringify(input), result };
   }
   async function analyze() {
     if (analyzing.current) return;
