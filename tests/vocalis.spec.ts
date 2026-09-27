@@ -13,7 +13,7 @@ test('landing is responsive and the demo session persists',async({page})=>{
  await expect(page.getByRole('heading',{name:'Session complete. Progress made.'})).toBeVisible();
  await expect(page.getByRole('heading',{name:'Your Vocalis Coach'})).toBeVisible();
  const url=page.url();await page.reload();await expect(page.getByRole('heading',{name:'Session complete. Progress made.'})).toBeVisible();expect(page.url()).toBe(url);
- await page.goto(base+'/history');await expect(page.locator('tbody tr')).toHaveCount(6);
+ await page.goto(base+'/history');await expect(page.locator('tbody tr')).toHaveCount(1);
  await page.goto(base+'/progress');await page.getByRole('button',{name:'30 days',exact:true}).click();await page.getByRole('button',{name:'Structure',exact:true}).click();await expect(page.getByRole('img',{name:/Structure scores/})).toBeVisible();
  await page.setViewportSize({width:390,height:844});await page.goto(base);await page.screenshot({path:'/tmp/vocalis-mobile.png',fullPage:true});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBeTruthy();

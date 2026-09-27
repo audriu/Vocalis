@@ -18,13 +18,20 @@ export function VocalisProvider({children}:{children:ReactNode}) {
      if (!parsed.profile || !Array.isArray(parsed.sessions) || typeof parsed.profile.name !== 'string' || !Array.isArray(parsed.profile.goals) || !parsed.sessions.every((s: Session) => s.id && s.analysis?.metrics && Array.isArray(s.analysis.weak_areas) && Array.isArray(s.analysis.improvement_techniques))) throw new Error('Invalid saved data');
      setData(parsed);
     } else {
-     const initial = createDemoData();
+     const initial: UserData = {
+      profile: { name: 'Alex', goals: [], comfort: 'Neutral', onboarded: false },
+      sessions: [],
+     };
      localStorage.setItem(KEY, JSON.stringify(initial));
      setData(initial);
     }
    } catch {
-    setData(createDemoData());
-    setStorageError('Saved data could not be loaded. This tab is using sample data. Export any new sessions before closing it.');
+    const fallback: UserData = {
+     profile: { name: 'Alex', goals: [], comfort: 'Neutral', onboarded: false },
+     sessions: [],
+    };
+    setData(fallback);
+    setStorageError('Saved data could not be loaded. Browser storage will start fresh.');
    }
    setReady(true);
   });

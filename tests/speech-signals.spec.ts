@@ -49,24 +49,68 @@ test.describe('Speech Signals Scoring Engine', () => {
     expect(mistakes.some((m) => m.title.includes('tool') || m.title.includes('thin'))).toBe(true);
   });
 
-  test('detects gibberish or non-English input', () => {
+  test('detects gibberish or non-English input and heavily penalizes score with zero strengths', () => {
     const topic = 'What makes someone successful?';
     const transcript = 'asdf qwer zxcv poiuy lkjh mnbv rtyu ghjk vbnm';
     const signals = collectSignals(transcript, topic, 20);
 
     expect(signals.looksGibberish).toBe(true);
     const metrics = scoreMetrics(signals);
-    expect(metrics.Clarity).toBeLessThan(50);
-    expect(metrics.Relevance).toBeLessThan(40);
+    expect(metrics.Clarity).toBeLessThanOrEqual(25);
+    expect(metrics.Structure).toBeLessThanOrEqual(20);
+    expect(metrics.Vocabulary).toBeLessThanOrEqual(20);
+    expect(metrics.Relevance).toBeLessThanOrEqual(20);
+
+    const strengths = buildStrengths(signals);
+    expect(strengths).toEqual([]);
+
+    const mistakes = buildMistakes(signals, topic);
+    expect(mistakes.some((m) => m.title.includes('Unintelligible'))).toBe(true);
+
+    const localAnalysis = analyzeLocally({
+      transcript,
+      topic,
+      category: 'opinions',
+      duration: 20,
+    });
+    expect(localAnalysis.overall_score).toBeLessThanOrEqual(25);
+    expect(localAnalysis.strengths).toEqual([]);
 
     const copy = coachCopy(
-      30,
+      localAnalysis.overall_score,
       'Relevance',
       'Start with a clear statement.',
       signals,
       topic,
     );
-    expect(copy).toContain('Start over with one English sentence');
+    expect(copy).toContain('unintelligible');
+  });
+
+  test('detects mixed-language meta-talk with keyboard mash and strictly penalizes vocabulary and score', () => {
+    const topic = 'What is one small thing that makes your day better?';
+    const transcript =
+      'Main jo bhi bolunga ye record karega. Okay. So I think it is enough. Like this is my transcript. Can you see the transcript? Yeah. And now I type complete gibberish asdfghjkl qwerty.';
+    const signals = collectSignals(transcript, topic, 30);
+
+    expect(signals.looksGibberish).toBe(true);
+    expect(signals.metaTalk).toBe(true);
+
+    const metrics = scoreMetrics(signals);
+    expect(metrics.Vocabulary).toBeLessThanOrEqual(25);
+    expect(metrics.Relevance).toBeLessThanOrEqual(25);
+
+    const strengths = buildStrengths(signals);
+    expect(strengths).toEqual([]);
+
+    const localAnalysis = analyzeLocally({
+      transcript,
+      topic,
+      category: 'everyday-life',
+      duration: 30,
+    });
+    expect(localAnalysis.overall_score).toBeLessThanOrEqual(30);
+    expect(localAnalysis.strengths).toEqual([]);
+    expect(localAnalysis.mistakes.some((m) => m.title.includes('Unintelligible') || m.title.includes('tool'))).toBe(true);
   });
 
   test('calculates correct filler words count and hedges', () => {

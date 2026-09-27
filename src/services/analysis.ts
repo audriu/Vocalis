@@ -34,49 +34,49 @@ export function analyzeLocally(input: AnalysisInput): Analysis {
   if (category === "debate")
     mode_metrics = {
       "Argument quality": metrics.Structure,
-      Evidence: s.hasExample && !s.looksGibberish ? Math.max(metrics.Relevance, 70) : Math.min(metrics.Relevance, 48),
+      Evidence: s.hasExample && !s.looksGibberish ? Math.max(metrics.Relevance, 70) : Math.min(metrics.Relevance, 25),
       Persuasion: metrics.Clarity,
       Logic: metrics.Structure,
-      Rebuttal: /however|although|some argue|on the other hand/i.test(transcript)
+      Rebuttal: !s.looksGibberish && /however|although|some argue|on the other hand/i.test(transcript)
         ? 78
-        : Math.min(52, metrics.Structure),
+        : Math.min(30, metrics.Structure),
     };
   if (category === "storytelling")
     mode_metrics = {
       Hook: metrics.Clarity,
       "Narrative structure": metrics.Structure,
-      Specificity: s.hasExample && !s.looksGibberish ? 82 : Math.min(58, metrics.Relevance),
-      Emotion: /felt|afraid|happy|worried|excited|sad/i.test(transcript)
+      Specificity: s.hasExample && !s.looksGibberish ? 82 : Math.min(30, metrics.Relevance),
+      Emotion: !s.looksGibberish && /felt|afraid|happy|worried|excited|sad/i.test(transcript)
         ? 80
-        : 55,
-      Ending: s.hasConclusion ? 84 : 52,
+        : Math.min(30, metrics.Clarity),
+      Ending: !s.looksGibberish && s.hasConclusion ? 84 : Math.min(30, metrics.Structure),
     };
   if (category === "interview")
     mode_metrics = {
       Professionalism: metrics.Conciseness,
       Relevance: metrics.Relevance,
       Structure: metrics.Structure,
-      Evidence: s.hasExample && !s.looksGibberish ? 82 : Math.min(50, metrics.Clarity),
+      Evidence: s.hasExample && !s.looksGibberish ? 82 : Math.min(25, metrics.Clarity),
     };
   if (category === "hackathon-pitch")
     mode_metrics = {
-      "Problem & Solution": /problem|solve|pain|need|solution|build/i.test(transcript)
+      "Problem & Solution": !s.looksGibberish && /problem|solve|pain|need|solution|build/i.test(transcript)
         ? Math.max(metrics.Clarity, 75)
-        : Math.min(metrics.Clarity, 50),
-      "Pitch Structure": s.hasExample && s.hasConclusion ? 84 : Math.min(62, metrics.Structure),
-      "Demo & Evidence": /demo|work|built|feature|integrate|assemblyai/i.test(transcript)
+        : Math.min(metrics.Clarity, 25),
+      "Pitch Structure": !s.looksGibberish && s.hasExample && s.hasConclusion ? 84 : Math.min(25, metrics.Structure),
+      "Demo & Evidence": !s.looksGibberish && /demo|work|built|feature|integrate|assemblyai/i.test(transcript)
         ? 82
-        : Math.min(55, metrics.Relevance),
+        : Math.min(20, metrics.Relevance),
       "Value & Impact":
-        /impact|market|user|users|customer|customers|creator|creators|builder|builders|future|value|result|transform|scale/i.test(
+        !s.looksGibberish && /impact|market|user|users|customer|customers|creator|creators|builder|builders|future|value|result|transform|scale/i.test(
           transcript,
         )
           ? 80
-          : 58,
+          : Math.min(20, metrics.Relevance),
       "Pacing against clock":
-        s.rate >= 110 && s.rate <= 165
+        !s.looksGibberish && s.rate >= 110 && s.rate <= 165
           ? 88
-          : Math.max(45, Math.round(88 - Math.abs(s.rate - 140))),
+          : Math.max(15, Math.min(40, Math.round(88 - Math.abs(s.rate - 140)))),
     };
   return {
     overall_score: overall,
@@ -190,7 +190,7 @@ export class LlmGatewayAnalysisProvider implements AnalysisProvider {
   ) {}
   async analyze(input: AnalysisInput): Promise<Analysis> {
     const local = analyzeLocally(input);
-    if (input.demo) return local;
+    if (input.demo || local.overall_score <= 30 || local.strengths.length === 0) return local;
     try {
       const weakest = Object.entries(local.metrics)
         .sort((a, b) => a[1] - b[1])

@@ -148,6 +148,78 @@ export const TECHNIQUES: TechniqueEntry[] = [
     practice:
       "Re-record your opener without “sorry,” “I guess,” or “maybe.” Keep the rest of the answer.",
   },
+  {
+    name: "Chronological Triad: Past, Present, Future",
+    weakness: "Structure",
+    why: "Linear time progression is universally intuitive for listeners.",
+    action:
+      "Break your answer into three beats: how things were, where they stand today, and what happens next.",
+    practice:
+      "Retell your response using the transition phrases: “Initially…”, “Currently…”, and “Looking forward…”.",
+  },
+  {
+    name: "The 15-Word Thesis",
+    weakness: "Conciseness",
+    why: "Distilling your central claim forces clarity before adding details.",
+    action:
+      "State your bottom-line takeaway in 15 words or fewer before explaining reasons or background.",
+    practice:
+      "Write your core answer in one punchy sentence and deliver it as your opening line in the next attempt.",
+  },
+  {
+    name: "Rhythmic Phrasing",
+    weakness: "Fluency",
+    why: "Grouping words into natural rhythmic clauses prevents hesitant single-word delivery.",
+    action:
+      "Speak in 3-to-5 word chunks separated by tiny micro-pauses instead of continuous rushing.",
+    practice:
+      "Deliver your main point while tapping a surface on each rhythmic phrase to establish a steady cadence.",
+  },
+  {
+    name: "Define the Stakes",
+    weakness: "Clarity",
+    why: "Explaining why something matters immediately clarifies its real-world importance.",
+    action:
+      "Follow your opening claim with: “Why this matters is…” or “What is at stake is…”.",
+    practice:
+      "In your next session, state the core consequence of your topic within the first 20 seconds.",
+  },
+  {
+    name: "Hook and Pivot",
+    weakness: "Spontaneity",
+    why: "Reacting to an immediate observation helps start speaking without hesitation.",
+    action:
+      "React immediately to one prominent word in the prompt, then pivot directly to your central example.",
+    practice:
+      "Pick a single keyword from the question and build your opening line around your immediate reaction to it.",
+  },
+  {
+    name: "The Return Anchor",
+    weakness: "Relevance",
+    why: "Bringing your final sentence back to the prompt ensures a cohesive, relevant conclusion.",
+    action:
+      "Close your speech by directly echoing the prompt’s core question in your final takeaway sentence.",
+    practice:
+      "Before you start recording, formulate your exact concluding sentence answering the prompt.",
+  },
+  {
+    name: "Sensory Anchors",
+    weakness: "Vocabulary",
+    why: "Sensory details (visual, auditory, tactile) make concepts concrete and memorable.",
+    action:
+      "Include at least one visual or physical descriptor instead of relying purely on abstract terminology.",
+    practice:
+      "Describe your example using what it looked, sounded, or felt like rather than just what it was.",
+  },
+  {
+    name: "Downward Inflection",
+    weakness: "Confidence",
+    why: "Ending sentences with an upward pitch sounds like a question rather than a conviction.",
+    action:
+      "Land the end of your key assertions on a firm downward vocal inflection rather than rising pitch.",
+    practice:
+      "Deliver your thesis statement three times, ensuring the pitch drops slightly on the final syllable.",
+  },
 ];
 
 export const SESSION_TIPS = [
