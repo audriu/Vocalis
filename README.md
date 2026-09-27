@@ -62,71 +62,42 @@ The integration also uses several AssemblyAI features:
 - **Word Search** — search your finished transcript for specific words or phrases (e.g. filler words) and see how many times each one appears.
 - **Prompting and Keyterms** — the practice topic you're responding to is passed to AssemblyAI as contextual prompting, improving transcription accuracy for topic-specific vocabulary.
 
-🤖 AI-Powered Analysis
+🤖 AI-Powered Analysis & Smart Coaching
 
-Vocalis analyzes your response and provides structured feedback around areas such as:
+Vocalis analyzes your response and provides structured, actionable feedback:
 
-Strengths
-Mistakes and blunders
-Weak areas
-Speaking performance
-Improvement opportunities
-Practical coaching suggestions
-
-The objective is not simply to tell you that something was wrong.
-
-It is to help answer:
-
-"What should I do differently next time?"
+- **Executive Verdict & Tier Rating** — Instant high-level verdict classifying performance into clear tiers (*Executive Polish*, *Strong Delivery*, *Developing Presence*, or *Foundational Practice*) with clear focus directives.
+- **Cadence & Rhythm Analytics** — Words-per-minute (WPM) pace gauge, Speech Cleanliness % (filler-free utterance ratio), and Lexical Diversity index.
+- **Interactive Transcript Lenses** — Lens filters to isolate *Fillers*, *Signposts & Transitions*, and *Key Terms & Entities* in context.
+- **AI Polished Delivery (✨) & Voice Playback** — Generates a refined, professional take side-by-side with your original transcript, complete with built-in speech synthesis playback to listen to the ideal conversational cadence.
+- **60-Second Challenge Blueprint** — Checkable action steps to focus on before retrying your prompt.
+- **Strengths & Growth Areas** — Dynamic detection of vocabulary range, argumentation structure, and signposting.
+- **Interactive Voice Coach** — Bidirectional voice coaching powered by AssemblyAI, offering conversational critique and live roleplay.
 
 📈 Progress Tracking
 
-Track your practice history and performance over time.
-
-The dashboard is designed around the idea that communication is a skill that improves through consistent practice rather than one-time evaluation.
+Track your practice history and performance over time without relying on external databases—all session progress is securely preserved locally in your browser.
 
 🔄 Practice Again
 
-Feedback is most useful when it leads to another attempt.
+Feedback is most useful when it leads to another attempt. Vocalis makes it seamless to launch a focused 60-second retry loop.
 
-Vocalis makes it easy to return to practice and apply what you learned from previous sessions.
+🏆 Live: Hackathon Pitch Training Mode
+
+A dedicated practice mode for pitching your project idea directly to AI hackathon judges:
+
+- Rehearse elevator pitches (1 min), standard pitches (3 min), and full demo walkthroughs (5 min).
+- Targeted judging criteria: Problem & Hook, Solution Clarity, Market & Impact, Technical Feasibility, and Delivery & Confidence.
+- Roleplay judge Q&A with the interactive AssemblyAI Voice Coach.
 
 🗺️ Product Roadmap
 
-Vocalis is currently focused on building a strong core speaking-practice experience.
+Vocalis is currently focused on building a strong core speaking-practice experience. Future directions include:
 
-Future directions include:
-
-More advanced speaking analytics
-Deeper performance tracking
-Personalized practice plans
-Adaptive difficulty
-More sophisticated topic generation
-Expanded communication skill categories
-Better long-term progress insights
-Mobile applications
-Additional AI coaching capabilities
-Hackathon pitch training (see below)
-Custom words for better transcription, unlocked with points or Pro (see below)
-
-🏆 Planned: Hackathon Pitch Training
-
-A dedicated practice mode for pitching your own project idea, like you would in front of hackathon judges.
-
-Instead of answering a generated topic, the user describes their project and then pitches it out loud. Vocalis analyzes the pitch with feedback built for pitching, such as:
-
-Clarity of the problem and solution
-Structure (hook → problem → solution → demo → impact)
-Pacing against the time limit
-Filler words and confidence
-How memorable and convincing the pitch is
-
-Pitch length options:
-
-1 minute: elevator pitch
-3 minutes: standard hackathon pitch
-5 minutes: full pitch with demo walkthrough
-10+ minutes: extended presentation (Pro)
+- Mobile applications
+- Team and peer review workspaces
+- Custom words for enhanced transcription unlocked via points
+- Integration with external LMS and corporate coaching suites
 
 💎 Points, Pro & Custom Words
 
