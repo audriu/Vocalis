@@ -138,6 +138,7 @@ export default function SessionResults({ id }: { id: string }) {
             title="What you did well"
             icon={<CheckCircle2 />}
             items={a.strengths}
+            empty="Nothing in this take earned a strength yet. Fix the prompt fit and structure first, then look for a win."
           />
           <FeedbackList
             title="Your blunders"
