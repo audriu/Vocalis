@@ -1,5 +1,11 @@
-Vocalis 🎙️
-Speak. Analyze. Improve.
+# Vocalis 🎙️
+**Speak. Analyze. Improve.**
+
+[![Live App](https://img.shields.io/badge/Live_Demo-vocalisai--jade.vercel.app-4f46e5?style=for-the-badge&logo=vercel)](https://vocalisai-jade.vercel.app/)
+[![Progress Dashboard](https://img.shields.io/badge/Progress_Dashboard-Active-10b981?style=for-the-badge)](https://vocalisai-jade.vercel.app/progress)
+
+> 🚀 **Live Application:** [https://vocalisai-jade.vercel.app](https://vocalisai-jade.vercel.app)  
+> 📈 **Progress & Analytics Dashboard:** [https://vocalisai-jade.vercel.app/progress](https://vocalisai-jade.vercel.app/progress)
 
 Vocalis is an AI-powered public speaking practice platform designed to help people become clearer, more confident, and more effective speakers through deliberate practice and intelligent feedback.
 
@@ -214,5 +220,8 @@ A formal open-source license may be added as the project evolves.
 Vocalis
 
 Speak. Analyze. Improve.
+
+- **Live Application:** [https://vocalisai-jade.vercel.app](https://vocalisai-jade.vercel.app)
+- **Progress & Analytics:** [https://vocalisai-jade.vercel.app/progress](https://vocalisai-jade.vercel.app/progress)
 
 Built to help people turn communication from something they worry about into something they can deliberately train.
