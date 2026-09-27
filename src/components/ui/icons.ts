@@ -16,6 +16,7 @@ import {
   Shapes,
   Shuffle,
   Zap,
+  Trophy,
   type LucideIcon,
 } from "lucide-react";
 
@@ -37,4 +38,5 @@ export const iconMap: Record<string, LucideIcon> = {
   Shapes,
   Shuffle,
   Zap,
+  Trophy,
 };

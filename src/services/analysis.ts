@@ -58,6 +58,26 @@ export function analyzeLocally(input: AnalysisInput): Analysis {
       Structure: metrics.Structure,
       Evidence: s.hasExample && !s.looksGibberish ? 82 : Math.min(50, metrics.Clarity),
     };
+  if (category === "hackathon-pitch")
+    mode_metrics = {
+      "Problem & Solution": /problem|solve|pain|need|solution|build/i.test(transcript)
+        ? Math.max(metrics.Clarity, 75)
+        : Math.min(metrics.Clarity, 50),
+      "Pitch Structure": s.hasExample && s.hasConclusion ? 84 : Math.min(62, metrics.Structure),
+      "Demo & Evidence": /demo|work|built|feature|integrate|assemblyai/i.test(transcript)
+        ? 82
+        : Math.min(55, metrics.Relevance),
+      "Value & Impact":
+        /impact|market|user|users|customer|customers|creator|creators|builder|builders|future|value|result|transform|scale/i.test(
+          transcript,
+        )
+          ? 80
+          : 58,
+      "Pacing against clock":
+        s.rate >= 110 && s.rate <= 165
+          ? 88
+          : Math.max(45, Math.round(88 - Math.abs(s.rate - 140))),
+    };
   return {
     overall_score: overall,
     metrics,
