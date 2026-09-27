@@ -3,9 +3,12 @@
 
 [![Live App](https://img.shields.io/badge/Live_Demo-vocalisai--jade.vercel.app-4f46e5?style=for-the-badge&logo=vercel)](https://vocalisai-jade.vercel.app/)
 [![Progress Dashboard](https://img.shields.io/badge/Progress_Dashboard-Active-10b981?style=for-the-badge)](https://vocalisai-jade.vercel.app/progress)
+[![Hackathon](https://img.shields.io/badge/AssemblyAI-Voice_Agent_Hackathon-7c3aed?style=for-the-badge)](https://lablab.ai/ai-hackathons/assemblyai-voice-agent-hackathon)
+[![Team](https://img.shields.io/badge/Team-Vocalis_Studio-ea580c?style=for-the-badge)](https://lablab.ai/ai-hackathons/assemblyai-voice-agent-hackathon/neural-nomads/submission)
 
 > 🚀 **Live Application:** [https://vocalisai-jade.vercel.app](https://vocalisai-jade.vercel.app)  
-> 📈 **Progress & Analytics Dashboard:** [https://vocalisai-jade.vercel.app/progress](https://vocalisai-jade.vercel.app/progress)
+> 📈 **Progress & Analytics Dashboard:** [https://vocalisai-jade.vercel.app/progress](https://vocalisai-jade.vercel.app/progress)  
+> 🏆 **Built for:** [AssemblyAI - Voice Agent Hackathon](https://lablab.ai/ai-hackathons/assemblyai-voice-agent-hackathon) by Team Vocalis Studio
 
 Vocalis is an AI-powered public speaking practice platform designed to help people become clearer, more confident, and more effective speakers through deliberate practice and intelligent feedback.
 
@@ -154,15 +157,27 @@ The long-term goal is simple:
 
 Help people become better speakers by giving them a place to practice every day.
 
-⚙️ Setup
+⚙️ Setup & Quick Start
 
-To run transcription locally, add your AssemblyAI API key to a `.env.local` file in the project root:
+```bash
+# Clone the repository
+git clone https://github.com/kalp12265/Vocalis.git
+cd Vocalis
 
+# Install dependencies
+npm install
+
+# Add your AssemblyAI API key to .env.local
+echo "ASSEMBLYAI_API_KEY=your-key-here" > .env.local
+
+# Run development server
+npm run dev
+
+# Run test suite
+npm test
 ```
-ASSEMBLYAI_API_KEY=your-key-here
-```
 
-Get a key from the [AssemblyAI dashboard](https://www.assemblyai.com/dashboard).
+Get an API key from the [AssemblyAI Dashboard](https://www.assemblyai.com/dashboard).
 
 🚧 Current Status
 
