@@ -1,7 +1,10 @@
 'use client';
 import { useEffect, useRef } from 'react';
 export function useDialogAccessibility(open:boolean,onClose:()=>void){
- const close=useRef(onClose);close.current=onClose;
+ const close = useRef(onClose);
+ useEffect(() => {
+  close.current = onClose;
+ }, [onClose]);
  useEffect(()=>{
  if(!open)return;
  const previous=document.activeElement as HTMLElement|null;const overflow=document.body.style.overflow;document.body.style.overflow='hidden';

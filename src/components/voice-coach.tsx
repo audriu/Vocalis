@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Headphones, PhoneOff, RotateCw, Wand2, Mic, AlertCircle, Check, X } from 'lucide-react';
 import { Technique } from '@/types';
 const WS_URL = 'wss://agents.assemblyai.com/v1/ws';
@@ -53,19 +53,19 @@ export default function VoiceCoach({ topic, transcript, techniques, feedback }: 
  const playhead = useRef(0);
  const logEnd = useRef<HTMLDivElement | null>(null);
  useEffect(() => { logEnd.current?.scrollIntoView({ block: 'nearest' }); }, [lines]);
- useEffect(() => () => teardown(), []);
- function flushAudio() { for (const s of sources.current) { try { s.stop(); } catch {} } sources.current = []; playhead.current = playCtx.current?.currentTime || 0; setSpeaking(false); }
- function clearResume() { if (resumeTimer.current) { clearTimeout(resumeTimer.current); resumeTimer.current = null; } }
- function pausePlayback() { clearResume(); if (!sources.current.length || playCtx.current?.state !== 'running') return; playCtx.current.suspend().catch(() => {}); setPaused(true); }
- function resumePlayback() { clearResume(); if (playCtx.current?.state === 'suspended') playCtx.current.resume().catch(() => {}); setPaused(false); }
- function teardown() {
+ const flushAudio = useCallback(() => { for (const s of sources.current) { try { s.stop(); } catch {} } sources.current = []; playhead.current = playCtx.current?.currentTime || 0; setSpeaking(false); }, []);
+ const clearResume = useCallback(() => { if (resumeTimer.current) { clearTimeout(resumeTimer.current); resumeTimer.current = null; } }, []);
+ const pausePlayback = useCallback(() => { clearResume(); if (!sources.current.length || playCtx.current?.state !== 'running') return; playCtx.current.suspend().catch(() => {}); setPaused(true); }, [clearResume]);
+ const resumePlayback = useCallback(() => { clearResume(); if (playCtx.current?.state === 'suspended') playCtx.current.resume().catch(() => {}); setPaused(false); }, [clearResume]);
+ const teardown = useCallback(() => {
   const socket = ws.current; ws.current = null;
   if (socket) { try { if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify({ type: 'session.end' })); socket.close(); } catch {} }
   clearResume(); flushAudio(); setPaused(false);
   stream.current?.getTracks().forEach(t => t.stop()); stream.current = null;
   ctx.current?.close().catch(() => {}); ctx.current = null;
   playCtx.current?.close().catch(() => {}); playCtx.current = null;
- }
+ }, [clearResume, flushAudio]);
+ useEffect(() => () => teardown(), [teardown]);
  function play(base64: string) {
   const audio = playCtx.current; if (!audio) return;
   const raw = atob(base64); const samples = new Float32Array(raw.length >> 1);

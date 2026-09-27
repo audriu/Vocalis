@@ -9,7 +9,26 @@ const Context=createContext<Store|null>(null);
 export function VocalisProvider({children}:{children:ReactNode}) {
  const [data,setData]=useState<UserData>({profile:{name:'Alex',goals:[],comfort:'Neutral',onboarded:false},sessions:[]});
  const [ready,setReady]=useState(false);const [storageError,setStorageError]=useState('');
- useEffect(()=>{try{const raw=localStorage.getItem(KEY);if(raw){const parsed=JSON.parse(raw);if(!parsed.profile||!Array.isArray(parsed.sessions)||typeof parsed.profile.name!=='string'||!Array.isArray(parsed.profile.goals)||!parsed.sessions.every((s:Session)=>s.id&&s.analysis?.metrics&&Array.isArray(s.analysis.weak_areas)&&Array.isArray(s.analysis.improvement_techniques)))throw new Error('Invalid saved data');setData(parsed);}else{const initial=createDemoData();localStorage.setItem(KEY,JSON.stringify(initial));setData(initial);}}catch{setData(createDemoData());setStorageError('Saved data could not be loaded. This tab is using sample data. Export any new sessions before closing it.');}setReady(true);},[]);
+ useEffect(() => {
+  queueMicrotask(() => {
+   try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) {
+     const parsed = JSON.parse(raw);
+     if (!parsed.profile || !Array.isArray(parsed.sessions) || typeof parsed.profile.name !== 'string' || !Array.isArray(parsed.profile.goals) || !parsed.sessions.every((s: Session) => s.id && s.analysis?.metrics && Array.isArray(s.analysis.weak_areas) && Array.isArray(s.analysis.improvement_techniques))) throw new Error('Invalid saved data');
+     setData(parsed);
+    } else {
+     const initial = createDemoData();
+     localStorage.setItem(KEY, JSON.stringify(initial));
+     setData(initial);
+    }
+   } catch {
+    setData(createDemoData());
+    setStorageError('Saved data could not be loaded. This tab is using sample data. Export any new sessions before closing it.');
+   }
+   setReady(true);
+  });
+ }, []);
  function persist(next:UserData){setData(next);try{localStorage.setItem(KEY,JSON.stringify(next));setStorageError('');return true;}catch{setStorageError('Browser storage is unavailable or full. Your work is available in this tab, but may not survive a refresh. Export it from Profile.');return false;}}
  return <Context.Provider value={{data,ready,storageError,updateProfile:p=>{persist({...data,profile:{...data.profile,...p}});},addSession:s=>persist({...data,sessions:[...data.sessions,s]}),redeemUnlock:minutes=>{const tier=UNLOCK_TIERS.find(t=>t.minutes===minutes);const spent=data.rewards?.spent||0;if(!tier||getRewards(data.sessions,spent).balance<tier.cost)return false;const current=Date.parse(data.rewards?.unlockedUntil||'');const running=Number.isFinite(current)&&current>Date.now();
  // Redeeming while an unlock is running adds an hour and keeps the longer of the two lengths.
