@@ -7,13 +7,13 @@ import {
   AlertCircle,
   TrendingUp,
   Mic,
-  FileText,
   CircleHelp,
+  Sparkles,
 } from "lucide-react";
 import { useVocalis } from "@/hooks/use-vocalis";
 import { getCategory } from "@/data/topics";
 import { sessionPoints } from "@/data/rewards";
-import { FILLER_PATTERN } from "@/data/fillers";
+import { generateSmartRewrite } from "@/services/smart-rewrite";
 import VoiceCoach from "./voice-coach";
 import {
   PageHeading,
@@ -22,15 +22,17 @@ import {
   EmptyState,
   Badge,
   Card,
-  CardHeader,
   Eyebrow,
 } from "./ui";
 import {
+  CadenceInsights,
+  ChallengeCard,
   CoachPanel,
   FeedbackList,
   FillerBadges,
   MetricsGrid,
   ModeMetrics,
+  SmartTranscript,
   TechniquesPanel,
   WeakAreas,
 } from "./results";
@@ -46,6 +48,7 @@ export default function SessionResults({ id }: { id: string }) {
         description="Sessions are saved locally on the device you practiced with. Find your saved sessions in History or start a new speaking moment."
       />
     );
+
   const a = session.analysis;
   const previous = index > 0 ? data.sessions[index - 1] : null;
   const improvement = previous
@@ -54,7 +57,14 @@ export default function SessionResults({ id }: { id: string }) {
   const strongest = Object.entries(a.metrics).sort((x, y) => y[1] - x[1])[0];
   const fillers = a.filler_words.reduce((n, f) => n + f.count, 0);
   const retry = `/practice/${session.category}?prompt=${encodeURIComponent(session.topic.replace(/^ARGUE (FOR|AGAINST): /, ""))}`;
-  const pieces = session.transcript.split(FILLER_PATTERN);
+
+  const smartData = generateSmartRewrite(
+    session.transcript,
+    session.topic,
+    session.category,
+    session.duration,
+    a.overall_score,
+  );
 
   return (
     <>
@@ -82,6 +92,7 @@ export default function SessionResults({ id }: { id: string }) {
               : "Local coaching · Text-based estimates, not an acoustic or scientific assessment. Confidence and spontaneity are language-based proxies."}
         </span>
       </div>
+
       <section className="results-hero">
         <ScoreRing score={a.overall_score} />
         <div>
@@ -96,20 +107,33 @@ export default function SessionResults({ id }: { id: string }) {
             })}{" "}
             · {session.demo ? "Demo session" : "Personal practice"}
           </p>
-          {sessionPoints(session) > 0 && (
-            <Badge variant="points">⚡ +{sessionPoints(session)} points</Badge>
-          )}
-          {improvement !== null && (
-            <Badge
-              variant="improvement"
-              icon={<TrendingUp size={12} />}
-            >
-              {improvement >= 0 ? "+" : ""}
-              {improvement} from your previous session
-            </Badge>
-          )}
+          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginTop: 8 }}>
+            {sessionPoints(session) > 0 && (
+              <Badge variant="points">⚡ +{sessionPoints(session)} points</Badge>
+            )}
+            {improvement !== null && (
+              <Badge
+                variant="improvement"
+                icon={<TrendingUp size={12} />}
+              >
+                {improvement >= 0 ? "+" : ""}
+                {improvement} from your previous session
+              </Badge>
+            )}
+          </div>
+
+          <div className="coach-verdict-box">
+            <div className="coach-verdict-header">
+              <Sparkles size={13} />
+              <span>EXECUTIVE VERDICT</span>
+              <span className="coach-verdict-tag">{smartData.coachVerdict.tier}</span>
+            </div>
+            <strong>{smartData.coachVerdict.headline}</strong>
+            <p>{smartData.coachVerdict.summary}</p>
+          </div>
         </div>
       </section>
+
       <div className="results-summary">
         <div>
           <span>Speaking time</span>
@@ -128,6 +152,14 @@ export default function SessionResults({ id }: { id: string }) {
           <strong>{strongest[0]}</strong>
         </div>
       </div>
+
+      <CadenceInsights
+        pacing={smartData.pacing}
+        cleanlinessScore={smartData.cleanlinessScore}
+        lexicalDiversity={smartData.lexicalDiversity}
+        signpostCount={smartData.signposts.length}
+      />
+
       <div className="results-columns">
         <div>
           <MetricsGrid
@@ -164,15 +196,24 @@ export default function SessionResults({ id }: { id: string }) {
             }
           />
         </div>
+
         <div>
           <CoachPanel feedback={a.coach_feedback} retryHref={retry} />
+
+          <ChallengeCard
+            steps={smartData.challengeSteps}
+            retryHref={retry}
+          />
+
           <WeakAreas areas={a.weak_areas} />
+
           {a.mode_metrics && (
             <ModeMetrics
               title={`${getCategory(session.category).name} focus`}
               metrics={a.mode_metrics}
             />
           )}
+
           <Card>
             <Eyebrow>KEEP YOUR MOMENTUM</Eyebrow>
             <h3 style={{ fontSize: 16, marginTop: 14, lineHeight: 1.6 }}>
@@ -193,46 +234,15 @@ export default function SessionResults({ id }: { id: string }) {
           </Card>
         </div>
       </div>
-      <Card className="transcript-panel">
-        <CardHeader action={<Badge>{a.words} words</Badge>}>
-          <div>
-            <h2 style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <FileText size={16} />
-              Your complete transcript
-            </h2>
-            <p>Your words, with a few patterns brought into focus.</p>
-          </div>
-        </CardHeader>
-        <p className="transcript-text">
-          {pieces.map((piece, i) =>
-            i % 2 === 1 ? (
-              <mark key={i}>{piece}</mark>
-            ) : (
-              <span key={i}>{piece}</span>
-            ),
-          )}
-        </p>
-        {session.entities && session.entities.length > 0 && (
-          <div className="entity-list">
-            <strong>Names & terms we heard</strong>
-            <ul>
-              {session.entities.map((e) => (
-                <li key={`${e.type}-${e.text}`}>
-                  <span>{e.type.replace(/_/g, " ")}</span>
-                  {e.text}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        <div className="transcript-legend">
-          <span>
-            <i className="legend-dot" />
-            Possible filler word · review in context
-          </span>
-          <span>Long pauses require audio-based analysis.</span>
-        </div>
-      </Card>
+
+      <SmartTranscript
+        rawTranscript={session.transcript}
+        polishedTranscript={smartData.polishedTranscript}
+        keyChanges={smartData.keyChanges}
+        entities={session.entities}
+        wordsCount={a.words}
+      />
+
       <div className="results-actions">
         <ButtonLink href={retry}>
           Practice Again <Mic size={15} />

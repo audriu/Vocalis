@@ -83,3 +83,73 @@
 @media(max-width:650px){.voice-coach-offer>div{width:100%}.voice-coach-offer button{flex:1;justify-content:center}}
 .entity-list{margin:14px 0 4px}.entity-list strong{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:8px}.entity-list ul{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:6px}.entity-list li{display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:4px 10px 4px 4px;border-radius:999px;background:#eaf0f5;color:#3f5566}.entity-list li span{font-size:8.5px;font-weight:600;text-transform:capitalize;padding:2px 7px;border-radius:999px;background:#fff;color:#7d9aae}
 .voice-coach-orb.paused{background:#7e8b63}
+
+/* Smart Analysis Page Enhancements */
+.coach-verdict-box{margin-top:14px;padding:12px 16px;background:#f5f6ee;border:1px solid #e2e7d5;border-radius:8px;display:flex;flex-direction:column;gap:4px}
+.coach-verdict-header{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;color:#6d7e5b}
+.coach-verdict-tag{font-size:9px;padding:2px 7px;border-radius:4px;background:#e7ecda;color:#5a694a;margin-left:auto}
+.coach-verdict-box strong{font-size:12px;color:#4f5c3f;font-weight:600}
+.coach-verdict-box p{font-size:11px;color:#798668;line-height:1.6}
+
+.cadence-card{margin:20px 0;background:#fffefa;border:1px solid var(--border);border-radius:10px;padding:22px}
+.cadence-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.cadence-status-pill{font-size:10px;font-weight:600;padding:4px 10px;border-radius:999px;background:#edf3e5;color:#647952;border:1px solid #dce8ce}
+.cadence-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:16px}
+.cadence-metric{padding:14px;background:#fbfbf6;border:1px solid #ecefe3;border-radius:8px;display:flex;flex-direction:column;gap:4px}
+.cadence-metric-top{display:flex;align-items:center;gap:6px;font-size:9.5px;color:#8d987d;font-weight:500}
+.cadence-metric strong{font-size:18px;font-family:var(--font-heading);font-weight:650;color:#566444;margin-top:2px}
+.cadence-metric small{font-size:8.5px;color:#9aa58b}
+.cadence-progress-bar{height:5px;background:#e8ece0;border-radius:999px;overflow:hidden;margin-top:8px}
+.cadence-fill{height:100%;border-radius:999px;transition:width .5s ease}
+.fill-green{background:#7e9a6c}
+.fill-orange{background:#e97645}
+.fill-purple{background:#9b85b1}
+.fill-blue{background:#7d9aae}
+
+.transcript-mode-switch{display:inline-flex;background:#eeefe5;border:1px solid #e3e6d7;border-radius:7px;padding:3px;gap:4px}
+.mode-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:5px;font-size:11px;font-weight:600;color:#7e8b6b;background:transparent;transition:all .15s}
+.mode-btn.active{background:#fffefa;color:#49553b;box-shadow:0 1px 4px #0000000d}
+
+.lens-filters-bar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#f7f8f1;border:1px solid #e9ecde;border-radius:7px;margin:14px 0 16px;flex-wrap:wrap}
+.lens-label{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;color:#859275;margin-right:4px}
+.lens-pill{padding:4px 10px;border-radius:999px;font-size:10px;font-weight:500;background:#fff;border:1px solid #e1e5d5;color:#768366}
+.lens-pill:hover{background:#f1f4e9}
+.lens-pill.active{background:#6f8b6b;color:#fff;border-color:#6f8b6b}
+
+.highlight-filler{background:#fde8d7;color:#a45d28;padding:2px 4px;border-radius:4px;font-weight:500}
+.highlight-signpost{background:#e6f3de;color:#446b32;padding:2px 4px;border-radius:4px;font-weight:600}
+
+.polished-container{display:flex;flex-direction:column;gap:18px;margin-top:12px}
+.polished-controls{display:flex;align-items:center;gap:10px}
+.polished-audio-btn{background:#f4f7ee;border-color:#d8e2cc;color:#5a7046;font-size:11px;min-height:38px}
+.polished-audio-btn:hover{background:#e8f0dc}
+.polished-audio-btn.playing{background:#fcf0e8;border-color:#f5cbb3;color:#c6562b}
+.copy-btn{font-size:11px;min-height:38px}
+.polished-text-box{padding:18px 20px;background:#fbfbf6;border:1px solid #e8ebd9;border-left:4px solid #6f8b6b;border-radius:8px}
+.polished-text{font-size:13.5px;line-height:2.1;color:#4a573b}
+.transformations-box{padding:14px 18px;background:#f5f7ed;border:1px solid #e6ebda;border-radius:8px}
+.transformations-box h4{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#5a6c47;margin-bottom:10px}
+.transformations-box ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
+.transformations-box li{display:flex;align-items:flex-start;gap:7px;font-size:11px;color:#6b7c58}
+.transformations-box li svg{color:#769661;flex-shrink:0;margin-top:2px}
+
+.challenge-blueprint-card{background:linear-gradient(135deg,#fffefa,#f8f9f0);border:1px solid #e2e8d4}
+.challenge-title-row{display:flex;align-items:center;justify-content:space-between;margin:8px 0 4px}
+.challenge-title-row h3{font-size:15px;font-weight:650;display:flex;align-items:center;gap:6px;color:#4e5e3c}
+.challenge-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;background:#fceee4;color:#d98551}
+.challenge-steps-list{display:flex;flex-direction:column;gap:8px;margin:14px 0 18px}
+.challenge-step-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:#fff;border:1px solid #e7ecdb;border-radius:7px;cursor:pointer;transition:all .15s}
+.challenge-step-item:hover{border-color:#cbd6bb}
+.challenge-step-item.done{background:#f3f7ec;border-color:#cfe0be}
+.challenge-step-item.done strong{color:#5d7249;text-decoration:line-through;opacity:.75}
+.challenge-step-item strong{display:block;font-size:11px;color:#4e5e3c;font-weight:600}
+.challenge-step-item p{font-size:10px;color:#859474;line-height:1.5;margin-top:2px}
+.step-checkbox{color:#9aa889;flex-shrink:0;margin-top:1px}
+.checked-icon{color:#6f8b6b}
+.challenge-launch-btn{width:100%;font-size:11.5px;min-height:40px;margin-top:4px}
+
+@media(max-width:850px){
+  .cadence-grid{grid-template-columns:1fr 1fr}
+  .transcript-mode-switch{width:100%;justify-content:center}
+}
+

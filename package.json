@@ -7,7 +7,7 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "playwright test tests/speech-signals.spec.ts tests/hackathon-pitch.spec.ts",
+    "test": "playwright test tests/speech-signals.spec.ts tests/hackathon-pitch.spec.ts tests/smart-rewrite.spec.ts",
     "test:e2e": "playwright test tests/vocalis.spec.ts"
   },
   "dependencies": {
