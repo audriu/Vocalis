@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vocalis — AssemblyAI Voice Agent Hackathon Presentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0c0e12;
+      --card-bg: rgba(22, 27, 34, 0.85);
+      --border: rgba(255, 255, 255, 0.1);
+      --accent: #f97316;
+      --accent-glow: rgba(249, 115, 22, 0.25);
+      --accent-blue: #38bdf8;
+      --accent-green: #34d399;
+      --accent-purple: #a855f7;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-image: 
+        radial-gradient(circle at 15% 20%, rgba(249, 115, 22, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.05) 0%, transparent 60%);
+    }
+
+    .deck-container {
+      position: relative;
+      width: 90vw;
+      max-width: 1100px;
+      height: 75vh;
+      max-height: 680px;
+      perspective: 1000px;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 48px 56px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(20px) scale(0.98);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 18px;
+    }
+
+    .logo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 19px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .logo-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 14px var(--accent);
+    }
+
+    .hackathon-tag {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: rgba(249, 115, 22, 0.15);
+      border: 1px solid rgba(249, 115, 22, 0.35);
+      color: #fb923c;
+    }
+
+    .slide-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 24px 0;
+    }
+
+    h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 46px;
+      line-height: 1.15;
+      font-weight: 700;
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
+    }
+
+    h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      letter-spacing: -0.01em;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #fff 30%, #fb923c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 720px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 14px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-top: 14px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      transition: border-color 0.2s;
+    }
+
+    .card:hover {
+      border-color: rgba(249, 115, 22, 0.4);
+    }
+
+    .card-icon {
+      font-size: 24px;
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+
+    .card h3 {
+      font-size: 16px;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+
+    .card p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .highlight-stat {
+      font-size: 38px;
+      font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.08);
+      margin-right: 6px;
+      margin-top: 6px;
+    }
+
+    .pill.orange { background: rgba(249, 115, 22, 0.15); color: #fb923c; border: 1px solid rgba(249, 115, 22, 0.3); }
+    .pill.blue { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+    .pill.green { background: rgba(52, 211, 153, 0.15); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3); }
+
+    .slide-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .nav-bar {
+      margin-top: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .nav-btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .nav-btn.primary:hover {
+      background: #ea580c;
+    }
+
+    .counter {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="deck-container">
+
+    <!-- SLIDE 1: Title -->
+    <div class="slide active" id="slide-1">
+      <div class="slide-header">
+        <div class="logo-badge"><span class="logo-dot"></span> Vocalis</div>
+        <div class="hackathon-tag">AssemblyAI Voice Agent Hackathon 2026</div>
+      </div>
+      <div class="slide-body">
+        <h1 class="gradient-text">Speak. Analyze. Improve.</h1>
+        <p class="subtitle">The fastest path to becoming a confident, stage-ready public speaker and hackathon pitcher — powered by AssemblyAI Voice Agents.</p>
+        <div style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap;">
+          <span class="pill orange">🎙️ AssemblyAI Voice Agent API</span>
+          <span class="pill blue">⚡ Universal-3.5 STT & Keyterms</span>
+          <span class="pill green">🧠 AssemblyAI LLM Gateway</span>
+          <span class="pill">🏆 Hackathon Pitch Training</span>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Team Vocalis Studio</span>
+        <span>Slide 1 of 8</span>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: The Problem -->
+    <div class="slide" id="slide-2">
+      <div class="slide-header">
+        <div class="logo-badge"><span class="logo-dot"></span> Vocalis</div>
+        <div class="hackathon-tag">The Problem</div>
+      </div>
+      <div class="slide-body">
+        <h2>Great Ideas Die from Poor Delivery</h2>
+        <div class="grid-3">
+          <div class="card">
+            <div class="highlight-stat">73%</div>
+            <h3>Glossophobia</h3>
+            <p>Nearly three in four people experience public speaking anxiety. For founders and hackathon teams, this anxiety destroys high-stakes pitches.</p>
+          </div>
+          <div class="card">
+            <div class="highlight-stat">$300/h</div>
+            <h3>Coaching Cost</h3>
+            <p>Professional speech coaching is cost-prohibitive. Books and passive YouTube videos give advice, but they never force you to open your mouth and speak.</p>
+          </div>
+          <div class="card">
+            <div class="highlight-stat">0s</div>
+            <h3>Practice Under Pressure</h3>
+            <p>Most speakers rehearse in their heads without a stopwatch. Under real judge pressure, they ramble, exceed time limits, and bury their demo.</p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Problem Statement</span>
+        <span>Slide 2 of 8</span>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: The Solution -->
+    <div class="slide" id="slide-3">
+      <div class="slide-header">
+        <div class="logo-badge"><span class="logo-dot"></span> Vocalis</div>
+        <div class="hackathon-tag">The Solution</div>
+      </div>
+      <div class="slide-body">
+        <h2>The Deliberate Practice Training Loop</h2>
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-icon">🎯</div>
+            <h3>1. Timed Spontaneous Takes</h3>
+            <p>Pick a topic or pitch your custom project. Practice under strict 60s, 180s, or 300s timers with browser-native microphone capture.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">📊</div>
+            <h3>2. Objective Signal Analysis</h3>
+            <p>Deep speech metrics: clarity, filler rate, signpost structure, concrete examples, and topic relevance scoring based on what you actually said.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">🤖</div>
+            <h3>3. Live Voice Coach Dialogue</h3>
+            <p>A real-time voice agent powered by AssemblyAI conducts a natural call, interrupts gracefully, and recites an improved version of your speech.</p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Core Value Proposition</span>
+        <span>Slide 3 of 8</span>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: Hackathon Pitch Training -->
+    <div class="slide" id="slide-4">
+      <div class="slide-header">
+        <div class="logo-badge"><span class="logo-dot"></span> Vocalis</div>
+        <div class="hackathon-tag">Signature Feature</div>
+      </div>
+      <div class="slide-body">
+        <h2>Hackathon Pitch Training Mode</h2>
+        <p class="subtitle" style="font-size: 15px; margin-bottom: 12px;">Built specifically for hackathon participants and startup founders preparing to pitch judges.</p>
+        <div class="grid-2">
+          <div class="card">
+            <h3>⏱️ Pitch Length Formats</h3>
+            <p>• <b>1-Minute Elevator Pitch</b>: Hook, problem, solution, and impact.<br>
+            • <b>3-Minute Standard Pitch</b>: Problem depth, solution, demo story, and future vision.<br>
+            • <b>5-Minute Presentation</b>: Full architecture walkthrough, traction, and business case.</p>
+          </div>
+          <div class="card">
+            <h3>⚖️ Judge-Grade Evaluation Metrics</h3>
+            <p>• <b>Problem & Solution</b>: Value clarity and pain-point identification.<br>
+            • <b>Pitch Structure</b>: Hook → Problem → Solution → Demo → Impact.<br>
+            • <b>Demo & Evidence</b>: Technical feasibility and live demo presence.<br>
+            • <b>Pacing Against Clock</b>: Words-per-minute calibration under stress.</p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Hackathon Mode</span>
+        <span>Slide 4 of 8</span>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: AssemblyAI Integration -->
+    <div class="slide" id="slide-5">
+      <div class="slide-header">
+        <div class="logo-badge"><span class="logo-dot"></span> Vocalis</div>
+        <div class="hackathon-tag">AssemblyAI Architecture</div>
+      </div>
+      <div class="slide-body">
+        <h2>Deeply Powered by AssemblyAI</h2>
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-icon">⚡</div>
+            <h3>Voice Agent WebSocket API</h3>
+            <p>• Full-duplex bidirectional 24kHz audio via AudioWorklet.<br>
+            • Live interruption handling (pauses instantly when user talks).<br>
+            • AI roleplay as a supportive hackathon judge or mentor.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">🎙️</div>
+            <h3>Universal-3.5 STT Engine</h3>
+            <p>• <b>Keyterms Prompting</b>: Custom project names and tech terms recognized with high precision.<br>
+            • <b>Disfluency Detection</b>: Captures fillers ("um", "uh") for accurate fluency analytics.<br>
+            • <b>Entity Detection & Diarization</b>.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">🧠</div>
+            <h3>AssemblyAI LLM Gateway</h3>
+            <p>• Intelligent post-speech critique generation.<br>
+            • Custom speaking techniques mapped directly to weakest areas.<br>
+            • Fallback to rule-based speech signal engine if offline.</p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Technology Stack</span>
+        <span>Slide 5 of 8</span>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: Demo & Architecture -->
+    <div class="slide" id="slide-6">
+      <div class="slide-header">
+        <div class="logo-badge"><span class="logo-dot"></span> Vocalis</div>
+        <div class="hackathon-tag">Architecture & Flow</div>
+      </div>
+      <div class="slide-body">
+        <h2>End-to-End Application Flow</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h3>Frontend & Capture</h3>
+            <p>• <b>Next.js 16 + React 19 + TypeScript</b>: Lightning-fast SSR & static rendering.<br>
+            • <b>AudioWorklet Node</b>: Streams clean PCM chunks without blocking the UI thread.<br>
+            • <b>Zero-Exposure Security</b>: Tokens minted server-side via <code>/api/voice-token</code>.</p>
+          </div>
+          <div class="card">
+            <h3>Automated Quality & Verification</h3>
+            <p>• <b>12 Automated Unit Tests</b>: Covering speech signals, gibberish detection, and pitch metrics.<br>
+            • <b>Zero Lint Errors</b>: Fully compliant with strict React 19 compiler rules.<br>
+            • <b>Production Build Verified</b>: All 14 routes compiled and deployable.</p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Architecture Flow</span>
+        <span>Slide 6 of 8</span>
+      </div>
+    </div>
+
+    <!-- SLIDE 7: Gamification & Market -->
+    <div class="slide" id="slide-7">
+      <div class="slide-header">
+        <div class="logo-badge"><span class="logo-dot"></span> Vocalis</div>
+        <div class="hackathon-tag">Business Model & Growth</div>
+      </div>
+      <div class="slide-body">
+        <h2>Gamified Retention & B2B Expansion</h2>
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-icon">💎</div>
+            <h3>Points Economy</h3>
+            <p>Users earn practice points per session and level completion bonuses. Points unlock longer talk times (10–20 min) and higher keyterm allowances.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">🚀</div>
+            <h3>Keyterms as a Resource</h3>
+            <p>AssemblyAI keyterms have hard capacity limits. Vocalis packages keyterm allowances into Free, Points-unlocked, and Pro tiers.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">🏢</div>
+            <h3>B2B Pitch & Sales Training</h3>
+            <p>Expand from hackathon teams into corporate sales pitch training, university debate clubs, and accelerator demo day preparation.</p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Market & Growth</span>
+        <span>Slide 7 of 8</span>
+      </div>
+    </div>
+
+    <!-- SLIDE 8: Call to Action -->
+    <div class="slide" id="slide-8">
+      <div class="slide-header">
+        <div class="logo-badge"><span class="logo-dot"></span> Vocalis</div>
+        <div class="hackathon-tag">Team Vocalis Studio</div>
+      </div>
+      <div class="slide-body" style="text-align: center; align-items: center;">
+        <h1 class="gradient-text" style="font-size: 42px;">Ready to Elevate Your Voice?</h1>
+        <p class="subtitle" style="text-align: center; margin-bottom: 24px;">Built with passion for the AssemblyAI Voice Agent Hackathon.<br>Deliberate practice makes extraordinary speakers.</p>
+        <div style="display: flex; gap: 16px; justify-content: center;">
+          <a href="/practice/hackathon-pitch" class="nav-btn primary" style="text-decoration: none; font-size: 15px; padding: 12px 24px;">Try Hackathon Pitch Mode 🎙️</a>
+          <a href="https://github.com/kalp12265/Vocalis" target="_blank" class="nav-btn" style="text-decoration: none; font-size: 15px; padding: 12px 24px;">View on GitHub ⭐</a>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>AssemblyAI Voice Agent Hackathon 2026</span>
+        <span>Slide 8 of 8</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="nav-bar">
+    <button class="nav-btn" id="prevBtn" onclick="prevSlide()">← Previous</button>
+    <span class="counter" id="slideCounter">1 / 8</span>
+    <button class="nav-btn primary" id="nextBtn" onclick="nextSlide()">Next →</button>
+  </div>
+  <p class="hint" style="margin-top: 8px;">Use Arrow Keys (← / →) or Spacebar to navigate</p>
+
+  <script>
+    let current = 1;
+    const total = 8;
+
+    function showSlide(index) {
+      document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+      const active = document.getElementById('slide-' + index);
+      if (active) active.classList.add('active');
+      document.getElementById('slideCounter').textContent = `${index} / ${total}`;
+      document.getElementById('prevBtn').disabled = index === 1;
+      document.getElementById('nextBtn').textContent = index === total ? 'Restart ↺' : 'Next →';
+    }
+
+    function nextSlide() {
+      current = current >= total ? 1 : current + 1;
+      showSlide(current);
+    }
+
+    function prevSlide() {
+      if (current > 1) {
+        current--;
+        showSlide(current);
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prevSlide();
+      }
+    });
+
+    showSlide(current);
+  </script>
+</body>
+</html>
